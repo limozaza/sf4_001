@@ -8,13 +8,16 @@
 
 namespace App\Controller;
 use App\Entity\Movie;
+use App\Exception\ValidationException;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\ControllerTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
  * Class MovieController
@@ -72,7 +75,12 @@ class MovieController
      * @Rest\View(statusCode=201)
      * @ParamConverter("movie", converter="fos_rest.request_body")
      */
-    public function add(Movie $movie){
+    public function add(Movie $movie, ConstraintViolationListInterface $validationErrors){
+
+        if(count($validationErrors)>0){
+            throw new ValidationException($validationErrors);
+        }
+
         $this->em->persist($movie);
         $this->em->flush();
         return $this->view(
