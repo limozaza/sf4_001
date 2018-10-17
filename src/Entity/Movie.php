@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -43,6 +45,17 @@ class Movie
      * @Assert\NotBlank()
      */
     private $description;
+
+    /**
+     * @var ArrayCollection
+     * @ORM\OneToMany(targetEntity="App\Entity\Role", mappedBy="movie")
+     */
+    private $roles;
+
+    public function __construct()
+    {
+        $this->roles = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -95,5 +108,13 @@ class Movie
         $this->description = $description;
 
         return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getRoles(): Collection
+    {
+        return $this->roles;
     }
 }

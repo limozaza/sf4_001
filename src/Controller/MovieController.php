@@ -8,6 +8,7 @@
 
 namespace App\Controller;
 use App\Entity\Movie;
+use App\Entity\Role;
 use App\Exception\ValidationException;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\ControllerTrait;
@@ -111,6 +112,47 @@ class MovieController
         }
         $this->em->remove($movie);
         $this->em->flush();
+    }
+
+    /**
+     * @Rest\Get(
+     *     path="/{id}/roles",
+     *     name="get_movie_roles"
+     * )
+     * @Rest\View()
+     */
+    public function getRoles(Movie $movie){
+        return $movie->getRoles();
+    }
+
+    /**
+     * @Rest\Post(
+     *      path="/{id}/roles",
+     *     name="add_movie_role"
+     * )
+     * @Rest\View(statusCode=Response::HTTP_CREATED)
+     * @ParamConverter("movie", converter="fos_rest.request_body")
+     */
+    public function addRoles(Movie $movie, Role $role){
+        $role->setMovie($movie);
+        $this->em->persist($role);
+        $movie->getRoles()->add($role);
+        $this->em->persist($movie);
+        $this->em->flush();
+
+        return $this->view(
+            $movie,
+            Response::HTTP_CREATED,
+            [
+                'Location' => $this->router->generate(
+                    'get_movie_roles',
+                    [
+                        'id' => $movie->getId(),
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    ]
+                )
+            ]
+        );
     }
 
 }
