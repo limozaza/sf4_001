@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Annotation as App;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\RoleRepository")
@@ -18,6 +19,7 @@ class Role
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Person")
+     * @App\DeserializeEntity(type="App\Entity\Person", idField="id", idGetter="getId", setter="setPerson")
      */
     private $person;
 

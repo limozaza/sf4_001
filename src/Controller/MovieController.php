@@ -43,10 +43,11 @@ class MovieController
      *     name="list_movies"
      * )
      * @Rest\View(
-     *
+     *     serializerGroups={"list_movies"}
      * )
      */
     public function list(){
+
         $movies = $this->em->getRepository(Movie::class)->findAll();
         return $movies;
     }
@@ -131,7 +132,7 @@ class MovieController
      *     name="add_movie_role"
      * )
      * @Rest\View(statusCode=Response::HTTP_CREATED)
-     * @ParamConverter("movie", converter="fos_rest.request_body")
+     * @ParamConverter("role", converter="fos_rest.request_body")
      */
     public function addRoles(Movie $movie, Role $role){
         $role->setMovie($movie);
@@ -139,6 +140,9 @@ class MovieController
         $movie->getRoles()->add($role);
         $this->em->persist($movie);
         $this->em->flush();
+
+
+        die;
 
         return $this->view(
             $movie,
